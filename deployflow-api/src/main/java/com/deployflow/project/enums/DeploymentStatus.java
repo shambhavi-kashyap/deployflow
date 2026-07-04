@@ -1,10 +1,11 @@
 package com.deployflow.project.enums;
 
 public enum DeploymentStatus {
-    PENDING,      
-    BUILDING,     
-    PUSHING,      
-    DEPLOYING,     
-    SUCCESS,       
-    FAILED    
+    PENDING,
+    CLONING,
+    BUILDING,
+    PUSHING_IMAGE,
+    DEPLOYING,
+    SUCCESS,
+    FAILED
 }

@@ -46,7 +46,8 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+                // Temporarily allowing deployments for browser testing
+                .requestMatchers("/api/auth/**", "/api/webhooks/**", "/api/deployments/**").permitAll() 
                 .anyRequest().authenticated() 
             )
             .sessionManagement(session -> session

@@ -1,6 +1,7 @@
 package com.deployflow.project.entity;
 
 import com.deployflow.project.enums.DeploymentStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore; // 1. ADD THIS IMPORT
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -14,6 +15,7 @@ public class Deployment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
+    @JsonIgnore
     private Project project;
 
     @Column(name = "commit_sha", nullable = false)
