@@ -1,7 +1,7 @@
 package com.deployflow.project.entity;
 
 import com.deployflow.project.enums.DeploymentStatus;
-import com.fasterxml.jackson.annotation.JsonIgnore; // 1. ADD THIS IMPORT
+import com.fasterxml.jackson.annotation.JsonIgnore; 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 

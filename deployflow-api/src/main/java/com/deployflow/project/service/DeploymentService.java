@@ -63,7 +63,6 @@ public class DeploymentService {
          Deployment deployment = deploymentRepository.findById(deploymentId)
                 .orElseThrow(() -> new RuntimeException("Deployment not found: " + deploymentId));
          
-         // Extract the string HERE while the @Transactional connection is still active!
          return deployment.getProject().getName(); 
     }
     @Transactional

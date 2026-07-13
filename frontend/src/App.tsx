@@ -16,26 +16,22 @@ interface Deployment {
 }
 
 export default function App() {
-  // --- AUTHENTICATION STATE ---
   const [token, setToken] = useState<string | null>(localStorage.getItem('jwt'));
   const [authMode, setAuthMode] = useState<'LOGIN' | 'REGISTER'>('LOGIN');
   const [authForm, setAuthForm] = useState({ email: '', password: '', fullName: '' });
   const [authError, setAuthError] = useState('');
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  // --- DASHBOARD STATE ---
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newProject, setNewProject] = useState({ name: '', githubRepoUrl: '', branch: 'main' });
   const [deploymentHistory, setDeploymentHistory] = useState<Deployment[]>([]);
 
-  // --- TERMINAL STATE ---
   const [status, setStatus] = useState('IDLE');
   const [logs, setLogs] = useState<string[]>([]);
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
-  // 1. DEFINE LOGOUT EARLY
   const handleLogout = () => {
     localStorage.removeItem('jwt');
     setToken(null);
@@ -43,7 +39,6 @@ export default function App() {
     setProjects([]);
   };
 
-  // 2. FETCH PROJECTS
   useEffect(() => {
     if (!token) return;
     
@@ -58,8 +53,6 @@ export default function App() {
       .catch(err => console.error("Failed to load projects", err));
   }, [token]);
 
-  // 3. FETCH DEPLOYMENT HISTORY
-  // 3. FETCH DEPLOYMENT HISTORY
   useEffect(() => {
     if (!activeProject || !token) return;
 
@@ -71,7 +64,6 @@ export default function App() {
         return res.json();
       })
       .then(data => {
-        // SAFETY CHECK: Only update if it's a real array. Otherwise, set to empty list!
         if (Array.isArray(data)) {
           setDeploymentHistory(data);
         } else {
@@ -80,16 +72,14 @@ export default function App() {
       })
       .catch(err => {
         console.error("Failed to load history", err);
-        setDeploymentHistory([]); // Prevent UI crash by defaulting to empty array
+        setDeploymentHistory([]); 
       });
   }, [activeProject, token, status]);
   
-  // Auto-scroll terminal
   useEffect(() => {
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [logs]);
 
-  // --- AUTHENTICATION LOGIC ---
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
@@ -136,7 +126,6 @@ export default function App() {
     }
   };
 
-  // --- PROJECT LOGIC ---
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -205,9 +194,6 @@ export default function App() {
     return 'text-gray-400';
   };
 
-  // ==========================================
-  // VIEW 1: AUTHENTICATION SCREEN
-  // ==========================================
   if (!token) {
     return (
       <div className="min-h-screen bg-[#0A0A0A] text-gray-200 flex flex-col justify-center items-center p-6 selection:bg-blue-500/30">
@@ -261,9 +247,6 @@ export default function App() {
     );
   }
 
-  // ==========================================
-  // VIEW 2: SECURE DASHBOARD
-  // ==========================================
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-gray-200 font-sans selection:bg-blue-500/30">
       <nav className="border-b border-gray-800 bg-[#111] px-6 py-4 flex items-center justify-between">
@@ -320,7 +303,6 @@ export default function App() {
 
         {activeProject && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* LEFT COLUMN: Controls & History */}
             <div className="lg:col-span-1 space-y-6">
               <div className="bg-[#111] border border-gray-800 rounded-xl p-6">
                 <h2 className="text-lg font-medium text-white mb-2">{activeProject.name}</h2>
@@ -332,7 +314,6 @@ export default function App() {
                 </button>
               </div>
 
-              {/* DEPLOYMENT HISTORY SIDEBAR */}
               <div className="bg-[#111] border border-gray-800 rounded-xl p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <History className="w-4 h-4 text-gray-400" />
@@ -367,7 +348,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* RIGHT COLUMN: Terminal */}
             <div className="lg:col-span-2 flex flex-col h-[650px] bg-[#0c0c0c] border border-gray-800 rounded-xl overflow-hidden shadow-2xl">
               <div className="bg-[#1a1a1a] border-b border-gray-800 px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">

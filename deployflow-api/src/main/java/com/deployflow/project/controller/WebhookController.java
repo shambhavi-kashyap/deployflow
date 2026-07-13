@@ -41,11 +41,10 @@ public class WebhookController {
 
     @PostMapping("/github")
     public ResponseEntity<String> handleGitHubWebhook(
-            @RequestBody String rawPayload, // Accept raw string for signature verification
+            @RequestBody String rawPayload, 
             @RequestHeader("X-GitHub-Event") String eventType,
             @RequestHeader(value = "X-Hub-Signature-256", required = false) String signature) {
         
-        // 1. Verify Security Signature
         if (!webhookSecurityService.verifySignature(rawPayload, signature)) {
             log.error("🚨 Unauthorized webhook attempt! Signature mismatch.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid signature");
@@ -62,7 +61,6 @@ public class WebhookController {
         }
         
         try {
-            // 2. Safely parse the raw string into our DTO
             GitHubPushEvent payload = objectMapper.readValue(rawPayload, GitHubPushEvent.class);
             
             String repoUrl = payload.getRepository().getHtmlUrl();

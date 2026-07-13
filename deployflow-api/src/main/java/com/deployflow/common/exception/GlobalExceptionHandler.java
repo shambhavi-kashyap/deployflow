@@ -17,6 +17,4 @@ public class GlobalExceptionHandler {
         log.warn("Project not found: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
-    
-    // You can add more handlers here later (e.g., for bad signatures!)
 }

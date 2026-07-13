@@ -25,7 +25,6 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                // Added "/error" to unmask hidden crashes!
                 .requestMatchers("/api/auth/**", "/api/webhooks/**", "/api/deployments/**", "/error", "/actuator/**").permitAll() 
                 .anyRequest().authenticated() 
             )

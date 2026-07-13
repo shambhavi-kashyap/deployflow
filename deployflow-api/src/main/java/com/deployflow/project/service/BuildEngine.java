@@ -5,7 +5,7 @@ import com.deployflow.project.entity.Project;
 import com.deployflow.project.enums.DeploymentStatus;
 import com.deployflow.project.repository.DeploymentLogRepository;
 import com.deployflow.project.repository.DeploymentRepository;
-import com.deployflow.project.repository.ProjectRepository; // <-- ADDED
+import com.deployflow.project.repository.ProjectRepository; 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -20,18 +20,16 @@ public class BuildEngine {
     private final DeploymentService deploymentService;
     private final GitService gitService;
     private final DeploymentRepository deploymentRepository;
-    private final DeploymentLogRepository deploymentLogRepository;
-    private final ProjectRepository projectRepository; // <-- ADDED
+    private final ProjectRepository projectRepository;
     
     public BuildEngine(DeploymentService deploymentService, 
                        GitService gitService, 
                        DeploymentRepository deploymentRepository, 
                        DeploymentLogRepository deploymentLogRepository,
-                       ProjectRepository projectRepository) { // <-- ADDED
+                       ProjectRepository projectRepository) { 
         this.deploymentService = deploymentService;
         this.gitService = gitService;
         this.deploymentRepository = deploymentRepository;
-        this.deploymentLogRepository = deploymentLogRepository;
         this.projectRepository = projectRepository;
     }
 
@@ -43,9 +41,6 @@ public class BuildEngine {
             Deployment deployment = deploymentRepository.findById(deploymentId)
                     .orElseThrow(() -> new RuntimeException("Deployment not found"));
             
-            // === THE FIX ===
-            // We explicitly grab the Project ID from the proxy, then do a quick, dedicated fetch 
-            // so we have all the data we need before moving on!
             Long projectId = deployment.getProject().getId();
             Project project = projectRepository.findById(projectId)
                     .orElseThrow(() -> new RuntimeException("Project not found"));
@@ -55,24 +50,18 @@ public class BuildEngine {
             }
 
             String branch = (project.getBranch() != null && !project.getBranch().isEmpty()) ? project.getBranch() : "main";
-            // Sanitize project name for Docker tags (no spaces, lowercase)
             String safeProjectName = project.getName().toLowerCase().replaceAll("[^a-z0-9]", "-");
 
-            // Phase 1: Cloning
             deploymentService.updateStatus(deploymentId, DeploymentStatus.CLONING, null);
             deploymentService.saveLog(deploymentId, "Initializing workspace...");
             deploymentService.saveLog(deploymentId, "Cloning repository: " + project.getGithubRepoUrl() + " on branch: " + branch + "...");
             
             File workspace = gitService.cloneRepository(project.getGithubRepoUrl());
             
-            // Check out the specific branch
             executeCommand(deploymentId, workspace, "cmd.exe", "/c", "git", "checkout", branch);
             
             deploymentService.saveLog(deploymentId, "Successfully cloned and checked out to: " + workspace.getAbsolutePath());
 
-            // ==========================================
-            // Phase 2 & Phase 3: Multi-Image Generation
-            // ==========================================
             deploymentService.updateStatus(deploymentId, DeploymentStatus.BUILDING, null);
             deploymentService.saveLog(deploymentId, "========================================");
             deploymentService.saveLog(deploymentId, "Analyzing repository structure...");
@@ -80,11 +69,9 @@ public class BuildEngine {
             File backendDir = new File(workspace, "deployflow-api");
             File frontendDir = new File(workspace, "frontend");
 
-            // SCENARIO A: Monorepo (Both folders exist)
             if (backendDir.exists() && frontendDir.exists()) {
                 deploymentService.saveLog(deploymentId, "🌟 Monorepo Detected! Generating 2 separate Docker images...");
 
-                // --- 1. PROCESS BACKEND (API) ---
                 deploymentService.saveLog(deploymentId, "--- [1/2] Processing Backend (Java) ---");
                 if (new File(backendDir, "pom.xml").exists()) {
                     executeCommand(deploymentId, backendDir, "cmd.exe", "/c", "mvnw.cmd", "clean", "package", "-DskipTests");
@@ -99,7 +86,6 @@ public class BuildEngine {
                     }
                 }
 
-                // --- 2. PROCESS FRONTEND (UI) ---
                 deploymentService.updateStatus(deploymentId, DeploymentStatus.BUILDING, null);
                 deploymentService.saveLog(deploymentId, "--- [2/2] Processing Frontend (React) ---");
                 if (new File(frontendDir, "package.json").exists()) {
@@ -116,7 +102,6 @@ public class BuildEngine {
                     }
                 }
             } 
-            // SCENARIO B: Standalone Root Repositories (Python, Angular, Single Java apps)
             else {
                 deploymentService.saveLog(deploymentId, "Standalone Repository Detected.");
                 
@@ -144,7 +129,6 @@ public class BuildEngine {
             }
             deploymentService.saveLog(deploymentId, "========================================");
             
-            // Phase 4: Success
             String mockLiveUrl = "https://" + safeProjectName + ".deployflow.app";
             
             deploymentService.saveLog(deploymentId, "Routing traffic to " + mockLiveUrl);

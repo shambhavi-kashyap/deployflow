@@ -24,7 +24,7 @@ public class WebhookSecurityService {
         }
 
         try {
-            String actualSignature = signatureHeader.substring(7); // Remove "sha256="
+            String actualSignature = signatureHeader.substring(7); 
             
             Mac mac = Mac.getInstance("HmacSHA256");
             SecretKeySpec secretKeySpec = new SecretKeySpec(webhookSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
@@ -32,7 +32,6 @@ public class WebhookSecurityService {
             
             byte[] hash = mac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
             
-            // Convert byte array to hex string
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
