@@ -1,6 +1,15 @@
 # 🚀 DeployFlow
 
-**DeployFlow** is a custom, full-stack CI/CD deployment engine built from scratch. It acts as a lightweight alternative to tools like Vercel or GitHub Actions, allowing users to clone, build, and package monolithic and monorepo applications into ready-to-deploy Docker containers with a single click.
+**DeployFlow** is a self-hosted CI/CD deployment platform built entirely from scratch. Inspired by tools like Vercel and GitHub Actions, it automates repository builds and Docker image generation—allowing users to clone, compile, and package both monolithic and monorepo applications into ready-to-deploy containers with a single click.
+
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/springboot-%236DB33F.svg?style=for-the-badge&logo=springboot&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![PostgreSQL](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+
+## 📸 Dashboard Overview
+![DeployFlow Dashboard](./assets/dashboard.png)
 
 ## ✨ Key Features
 
@@ -9,6 +18,11 @@
 * **Dynamic Build Engine:** Leverages Java `ProcessBuilder` to orchestrate native `git clone`, `mvnw package`, `npm build`, and `docker build` commands dynamically.
 * **Secure Authentication:** Implements stateless JWT (JSON Web Tokens) authentication with BCrypt password hashing and Spring Security.
 * **Automated Containerization:** Automatically detects `Dockerfile` configurations and packages successful builds into distinct Docker images.
+
+## ✨ Live Deployment Engine
+Streams real-time build and compilation logs directly to the React dashboard via Server-Sent Events (SSE). Automatically detects monorepo structures to build backend and frontend images simultaneously.
+
+![Live Build Logs](./assets/live-logs.png)
 
 ## 🛠️ Tech Stack
 
@@ -67,9 +81,15 @@ npm run dev
 
 Access the dashboard at `http://localhost:5173`.
 
+## 🔒 Secure Authentication
+Stateless JWT authentication with BCrypt password hashing and Spring Security.
+
+![Authentication Screen](./assets/login.png)
+
 ## 🚀 How it Works
 
 1. **Authenticate:** Create a secure account and log into the dashboard.
+
 2. **Import Project:** Add a GitHub repository URL and branch name.
 3. **Deploy:** Click "Deploy Now". The async Build Engine will:
    * Create a temporary, isolated workspace.
