@@ -1,4 +1,4 @@
-# 🚀 DeployFlow
+# DeployFlow
 
 **DeployFlow** is a self-hosted CI/CD deployment platform built entirely from scratch. Inspired by tools like Vercel and GitHub Actions, it automates repository builds and Docker image generation—allowing users to clone, compile, and package both monolithic and monorepo applications into ready-to-deploy containers with a single click.
 
@@ -8,10 +8,10 @@
 ![PostgreSQL](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
-## 📸 Dashboard Overview
+## Dashboard Overview
 ![DeployFlow Dashboard](./assets/dashboard.png)
 
-## ✨ Key Features
+## Key Features
 
 * **Smart Monorepo Detection:** Automatically scans directories to identify and independently build both React/Node.js frontends and Java/Spring Boot backends from a single repository.
 * **Live Deployment Logs:** Utilizes Server-Sent Events (SSE) to stream real-time build and compilation logs directly to the React dashboard.
@@ -19,12 +19,12 @@
 * **Secure Authentication:** Implements stateless JWT (JSON Web Tokens) authentication with BCrypt password hashing and Spring Security.
 * **Automated Containerization:** Automatically detects `Dockerfile` configurations and packages successful builds into distinct Docker images.
 
-## ✨ Live Deployment Engine
+## Live Deployment Engine
 Streams real-time build and compilation logs directly to the React dashboard via Server-Sent Events (SSE). Automatically detects monorepo structures to build backend and frontend images simultaneously.
 
 ![Live Build Logs](./assets/live-logs.png)
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Frontend:**
 * React 18 (Vite)
@@ -44,7 +44,7 @@ Streams real-time build and compilation logs directly to the React dashboard via
 * Maven / NPM
 * Git Integration
 
-## ⚙️ Local Setup & Installation
+## Local Setup & Installation
 
 ### Prerequisites
 * Java 21+
@@ -81,12 +81,12 @@ npm run dev
 
 Access the dashboard at `http://localhost:5173`.
 
-## 🔒 Secure Authentication
+## Secure Authentication
 Stateless JWT authentication with BCrypt password hashing and Spring Security.
 
 ![Authentication Screen](./assets/login.png)
 
-## 🚀 How it Works
+## How it Works
 
 1. **Authenticate:** Create a secure account and log into the dashboard.
 
@@ -100,7 +100,7 @@ Stateless JWT authentication with BCrypt password hashing and Spring Security.
    * Clean up the temporary workspace.
 4. **Monitor:** Watch the build process in real-time via the live terminal log viewer.
 
-## 🗺️ Future Roadmap
+## Future Roadmap
 
 While fully functional as an MVP, the following architectural enhancements are planned for production scaling:
 
@@ -110,4 +110,3 @@ While fully functional as an MVP, the following architectural enhancements are p
 * **Environment Variable Injection:** Add a secure UI to inject encrypted secrets directly into the Docker build process.
 
 ---
-*Designed and built by Shambhavi Kashyap.*
