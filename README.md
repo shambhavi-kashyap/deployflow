@@ -2,6 +2,8 @@
 
 **DeployFlow** is a self-hosted CI/CD deployment platform built entirely from scratch. Inspired by tools like Vercel and GitHub Actions, it automates repository builds and Docker image generation—allowing users to clone, compile, and package both monolithic and monorepo applications into ready-to-deploy containers with a single click.
 
+I built DeployFlow to demystify the magic behind modern CI/CD platforms. I wanted to understand how tools like Vercel manage isolated build environments, stream logs in real-time, and orchestrate containerization from a single repository.
+
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/springboot-%236DB33F.svg?style=for-the-badge&logo=springboot&logoColor=white)
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
@@ -10,6 +12,46 @@
 
 ## Dashboard Overview
 ![DeployFlow Dashboard](./assets/dashboard.png)
+
+```mermaid
+graph TD
+    %% External Actors
+    User((User))
+    GitHub[(GitHub Repository)]
+    
+    %% Frontend
+    subgraph Client [Client Side]
+        Dashboard[React Dashboard / Vite]
+    end
+    
+    %% Backend
+    subgraph Core [DeployFlow Server]
+        API[Spring Boot REST API & JWT Auth]
+        Engine[Build Engine / ProcessBuilder]
+        SSE[SSE Log Emitter]
+        DB[(PostgreSQL & Flyway)]
+    end
+    
+    %% Infrastructure
+    subgraph Host [Host System]
+        Workspace[[Isolated Temp Workspace]]
+        Docker{Docker Daemon}
+    end
+    
+    %% Relationships
+    User -->|Triggers Deploy| Dashboard
+    Dashboard -->|REST Commands| API
+    SSE -.->|Live Log Stream SSE| Dashboard
+    
+    API -->|Read/Write State| DB
+    API -->|Triggers Async Build| Engine
+    
+    Engine -->|1. git clone| GitHub
+    Engine -->|2. Init & Clean| Workspace
+    Engine -->|3. mvn/npm build| Workspace
+    Engine -->|4. docker build| Docker
+    Engine -->|Pipes standard output| SSE
+```
 
 ## Key Features
 
@@ -59,7 +101,7 @@ Create a local PostgreSQL database named `deployflow`:
 CREATE DATABASE deployflow;
 ```
 
-Ensure your `deployflow-api/src/main/resources/application.properties` contains your correct database credentials.
+Ensure your `deployflow-api/src/main/resources/application.yml` contains your correct database credentials.
 
 ### 2. Backend Setup (Spring Boot)
 Navigate to the API directory and start the Spring Boot server:
@@ -96,7 +138,7 @@ Stateless JWT authentication with BCrypt password hashing and Spring Security.
    * Clone the repository from GitHub.
    * Analyze the directory structure (detecting Java, Node, or Monorepo structures).
    * Execute the appropriate native build commands (Maven/NPM).
-   * Package the compiled artifacts into distinct Docker images.
+   * Package the compiled artifacts into distinct Docker images. Images are stored in the local Docker daemon, ready for deployment.
    * Clean up the temporary workspace.
 4. **Monitor:** Watch the build process in real-time via the live terminal log viewer.
 
@@ -107,6 +149,7 @@ While fully functional as an MVP, the following architectural enhancements are p
 * **Message Broker Integration:** Implement RabbitMQ/Kafka to queue deployment requests and prevent I/O thread exhaustion under heavy load.
 * **Webhook Automation:** Parse GitHub push event webhooks and verify HMAC-SHA256 signatures to trigger deployments automatically.
 * **Automated Rollbacks:** Implement versioned container tagging to allow users to instantly revert their live application to a previously successful build in case of a critical failure.
-* **Environment Variable Injection:** Add a secure UI to inject encrypted secrets directly into the Docker build process.
+* **Secrets Management:** Implement an interface for users to securely inject encrypted environment variables directly into the Docker build process.
+* **Automated Test Execution:** Implement CI validation gates to automatically run repository test suites (e.g., `mvn test` or `npm test`) within the isolated workspace prior to containerization, ensuring only verified, passing code is deployed.
 
 ---
